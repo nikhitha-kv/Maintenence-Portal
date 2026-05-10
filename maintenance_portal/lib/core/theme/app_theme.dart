@@ -6,11 +6,11 @@ class AppTheme {
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
-    primaryColor: AppColors.sapBlue,
+    primaryColor: AppColors.primary,
     scaffoldBackgroundColor: AppColors.lightBg,
     colorScheme: const ColorScheme.light(
-      primary: AppColors.sapBlue,
-      secondary: AppColors.sapGold,
+      primary: AppColors.primary,
+      secondary: AppColors.secondary,
       surface: AppColors.cardLight,
       error: AppColors.error,
     ),
@@ -21,9 +21,9 @@ class AppTheme {
     ),
     cardTheme: CardThemeData(
       color: AppColors.cardLight,
-      elevation: 4,
-      shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 2,
+      shadowColor: Colors.black.withOpacity(0.05),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,
@@ -36,11 +36,11 @@ class AppTheme {
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    primaryColor: AppColors.sapBlue,
+    primaryColor: AppColors.primary,
     scaffoldBackgroundColor: AppColors.darkBg,
     colorScheme: const ColorScheme.dark(
-      primary: AppColors.sapBlue,
-      secondary: AppColors.sapGold,
+      primary: AppColors.primary,
+      secondary: AppColors.secondary,
       surface: AppColors.cardDark,
       error: AppColors.error,
     ),
@@ -51,9 +51,11 @@ class AppTheme {
     ),
     cardTheme: CardThemeData(
       color: AppColors.cardDark,
-      elevation: 8,
-      shadowColor: Colors.black38,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
+      ),
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_provider.dart';
 import '../models/dash_model.dart';
 import 'dashboard_controller.dart';
 
@@ -12,301 +13,367 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dashData = ref.watch(dashboardDataProvider);
+    final isDarkMode = ref.watch(themeProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Industrial Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none_outlined),
-            onPressed: () {},
+      backgroundColor: Colors.transparent,
+      body: CustomScrollView(
+        slivers: [
+          _buildSliverAppBar(context, ref),
+          SliverToBoxAdapter(
+            child: RefreshIndicator(
+              onRefresh: () => ref.refresh(dashboardDataProvider.future),
+              child: dashData.when(
+                data: (data) => _buildDashboardContent(context, data, isDarkMode),
+                loading: () => _buildShimmer(context),
+                error: (err, stack) => _buildErrorState(err),
+              ),
+            ),
           ),
         ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () => ref.refresh(dashboardDataProvider.future),
-        child: dashData.when(
-          data: (data) => _buildDashboard(context, data),
-          loading: () => _buildShimmer(context),
-          error: (err, stack) => Center(child: Text('Error: $err')),
-        ),
       ),
     );
   }
 
-  Widget _buildDashboard(BuildContext context, DashModel data) {
-    return SingleChildScrollView(
+  Widget _buildSliverAppBar(BuildContext context, WidgetRef ref) {
+    final isDarkMode = ref.watch(themeProvider);
+    return SliverAppBar(
+      expandedHeight: 120,
+      floating: false,
+      pinned: true,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      flexibleSpace: FlexibleSpaceBar(
+        titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
+        title: Text(
+          'Industrial Hub',
+          style: GoogleFonts.outfit(
+            fontWeight: FontWeight.bold,
+            color: isDarkMode ? Colors.white : Colors.black87,
+            fontSize: 24,
+          ),
+        ),
+        background: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+          ),
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.help_outline_rounded, color: isDarkMode ? Colors.white : Colors.black54),
+          onPressed: () {},
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDashboardContent(BuildContext context, DashModel data, bool isDarkMode) {
+    return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildWelcomeHeader(),
+          _buildWelcomeHeader(context, isDarkMode),
           const SizedBox(height: 24),
-          _buildKPIGrid(data),
-          const SizedBox(height: 30),
-          _buildAnalyticsSection(context),
-          const SizedBox(height: 30),
-          _buildRecentActivitySection(),
+          _buildKPIGrid(context, data, isDarkMode),
+          const SizedBox(height: 32),
+          _buildSectionHeader(context, 'Live Activity Feed', Icons.rss_feed_rounded, isDarkMode),
+          const SizedBox(height: 16),
+          _buildRecentActivitySection(context, isDarkMode),
         ],
       ),
     );
   }
 
-  Widget _buildWelcomeHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildSectionHeader(BuildContext context, String title, IconData icon, bool isDarkMode) {
+    return Row(
       children: [
+        Icon(icon, size: 20, color: isDarkMode ? AppColors.primary : Colors.black54),
+        const SizedBox(width: 8),
         Text(
-          'Plant Status',
-          style: TextStyle(
+          title.toUpperCase(),
+          style: GoogleFonts.outfit(
             fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.sapBlue.withOpacity(0.8),
-          ),
-        ),
-        const Text(
-          'Main Unit 01',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
+            color: isDarkMode ? Colors.white70 : Colors.black54,
+            letterSpacing: 1.5,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildKPIGrid(DashModel data) {
+  Widget _buildWelcomeHeader(BuildContext context, bool isDarkMode) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: isDarkMode ? Colors.white.withOpacity(0.12) : Colors.white.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: isDarkMode ? Colors.transparent : Colors.black.withOpacity(0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: isDarkMode ? Colors.black26 : Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(Icons.factory_rounded, color: AppColors.primary, size: 32),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Plant Status: Optimal',
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    color: AppColors.success,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Main Unit 01 - Zone A',
+                  style: GoogleFonts.outfit(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: isDarkMode ? Colors.white : Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildKPIGrid(BuildContext context, DashModel data, bool isDarkMode) {
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisSpacing: 16,
       mainAxisSpacing: 16,
-      childAspectRatio: 1.1,
+      childAspectRatio: 1.2,
       children: [
-        _buildKPICard(
-          'Notifications',
+        _buildAnimatedKPICard(
+          'PENDING NOTIFS',
           data.totalNotifications.toString(),
           '+${data.todayNotifications} Today',
-          Icons.assignment_late_outlined,
-          AppColors.sapBlue,
+          Icons.notification_important_rounded,
+          AppColors.primary,
+          0.1,
+          context,
+          isDarkMode,
         ),
-        _buildKPICard(
-          'Work Orders',
+        _buildAnimatedKPICard(
+          'ACTIVE ORDERS',
           data.totalWorkOrders.toString(),
           '+${data.todayWorkOrders} Today',
-          Icons.engineering_outlined,
-          AppColors.sapGold,
+          Icons.handyman_rounded,
+          AppColors.secondary,
+          0.2,
+          context,
+          isDarkMode,
         ),
-        _buildKPICard(
-          'Efficiency',
-          '94%',
-          'Target 95%',
-          Icons.speed_outlined,
+        _buildAnimatedKPICard(
+          'OVERALL OEE',
+          '94.2%',
+          'Target: 95%',
+          Icons.offline_bolt_rounded,
           AppColors.success,
+          0.3,
+          context,
+          isDarkMode,
         ),
-        _buildKPICard(
-          'Uptime',
+        _buildAnimatedKPICard(
+          'TOTAL UPTIME',
           '99.8%',
-          'Last 24h',
-          Icons.timer_outlined,
+          'Last 30 Days',
+          Icons.verified_rounded,
           AppColors.info,
+          0.4,
+          context,
+          isDarkMode,
         ),
       ],
     );
   }
 
-  Widget _buildKPICard(String title, String value, String subtitle, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+  Widget _buildAnimatedKPICard(String title, String value, String subtitle, IconData icon, Color color, double delay, BuildContext context, bool isDarkMode) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: (800 + (delay * 1000)).toInt()),
+      builder: (context, val, child) {
+        return Transform.translate(
+          offset: Offset(0, 50 * (1 - val)),
+          child: Opacity(opacity: val, child: child),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: isDarkMode ? Colors.white.withOpacity(0.12) : Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: isDarkMode ? Colors.white.withOpacity(0.1) : color.withOpacity(0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(isDarkMode ? 0.2 : 0.08),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
             ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(icon, color: color, size: 24),
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(shape: BoxShape.circle, color: color),
                 ),
-              ),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: color,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAnalyticsSection(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(32),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Maintenance Trends',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Icon(Icons.more_horiz, color: Colors.white.withOpacity(0.5)),
-            ],
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            height: 200,
-            child: LineChart(
-              LineChartData(
-                gridData: FlGridData(show: false),
-                titlesData: FlTitlesData(show: false),
-                borderData: FlBorderData(show: false),
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: const [
-                      FlSpot(0, 3),
-                      FlSpot(2.6, 2),
-                      FlSpot(4.9, 5),
-                      FlSpot(6.8, 3.1),
-                      FlSpot(8, 4),
-                      FlSpot(9.5, 3),
-                      FlSpot(11, 4),
-                    ],
-                    isCurved: true,
-                    color: AppColors.sapGold,
-                    barWidth: 4,
-                    isStrokeCapRound: true,
-                    dotData: FlDotData(show: false),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      color: AppColors.sapGold.withOpacity(0.1),
-                    ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: GoogleFonts.outfit(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: isDarkMode ? Colors.white : Colors.black87,
                   ),
-                ],
-              ),
+                ),
+                Text(
+                  title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 10,
+                    color: isDarkMode ? Colors.white60 : Colors.black54,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.outfit(
+                    fontSize: 10,
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildRecentActivitySection() {
+
+  Widget _buildRecentActivitySection(BuildContext context, bool isDarkMode) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Recent Activity',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 16),
         _buildActivityItem(
-          'Work Order #45021',
-          'Completed by John Doe',
-          '12 mins ago',
-          Icons.check_circle_outline,
-          AppColors.success,
-        ),
-        _buildActivityItem(
-          'New Notification',
-          'High priority leak reported',
-          '45 mins ago',
-          Icons.error_outline,
+          'Critical Valve Failure',
+          'Reported by AI Diagnostic',
+          'Just Now',
+          Icons.warning_amber_rounded,
           AppColors.error,
+          context,
+          isDarkMode,
+        ),
+        _buildActivityItem(
+          'Preventive Maint. #882',
+          'Assigned to Team Beta',
+          '14 mins ago',
+          Icons.event_available_rounded,
+          AppColors.info,
+          context,
+          isDarkMode,
+        ),
+        _buildActivityItem(
+          'Pressure System Check',
+          'Completed successfully',
+          '1 hr ago',
+          Icons.task_alt_rounded,
+          AppColors.success,
+          context,
+          isDarkMode,
         ),
       ],
     );
   }
 
-  Widget _buildActivityItem(String title, String subtitle, String time, IconData icon, Color color) {
+  Widget _buildActivityItem(String title, String subtitle, String time, IconData icon, Color color, BuildContext context, bool isDarkMode) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[100]!),
+        color: isDarkMode ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: isDarkMode ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05)),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: color, size: 24),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, color: isDarkMode ? Colors.white : Colors.black87),
                 ),
                 Text(
                   subtitle,
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  style: GoogleFonts.outfit(fontSize: 12, color: isDarkMode ? Colors.white70 : Colors.black54),
                 ),
               ],
             ),
           ),
           Text(
             time,
-            style: TextStyle(fontSize: 10, color: Colors.grey[400]),
+            style: GoogleFonts.outfit(fontSize: 10, color: isDarkMode ? Colors.white54 : Colors.black38, fontWeight: FontWeight.bold),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(Object err) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 48),
+          const SizedBox(height: 16),
+          Text('System Error: $err', style: GoogleFonts.outfit()),
         ],
       ),
     );
@@ -314,20 +381,20 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildShimmer(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: SingleChildScrollView(
+      baseColor: Colors.grey[200]!,
+      highlightColor: Colors.grey[50]!,
+      child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            Container(height: 40, width: 200, color: Colors.white),
+            Container(height: 100, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(32))),
             const SizedBox(height: 24),
             GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              children: List.generate(4, (_) => Container(color: Colors.white)),
+              children: List.generate(4, (_) => Container(decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(28)))),
             ),
           ],
         ),

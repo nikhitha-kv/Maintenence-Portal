@@ -20,11 +20,11 @@ class WorkOrderDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeaderInfo(),
+                  _buildHeaderInfo(context),
                   const SizedBox(height: 30),
-                  _buildDetailSection(),
+                  _buildDetailSection(context),
                   const SizedBox(height: 30),
-                  _buildHistoryTimeline(),
+                  _buildHistoryTimeline(context),
                 ],
               ),
             ),
@@ -38,16 +38,12 @@ class WorkOrderDetailScreen extends StatelessWidget {
     return SliverAppBar(
       expandedHeight: 200,
       pinned: true,
-      backgroundColor: AppColors.sapGold,
+      backgroundColor: AppColors.secondary,
       flexibleSpace: FlexibleSpaceBar(
         title: Text('WO #${workOrder.aufnr}'),
         background: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.sapGold, Color(0xFFB8860B)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppColors.accentGradient,
           ),
           child: const Center(
             child: Icon(Icons.engineering_outlined, size: 80, color: Colors.white24),
@@ -57,14 +53,14 @@ class WorkOrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderInfo() {
+  Widget _buildHeaderInfo(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: AppColors.sapGold.withOpacity(0.1), blurRadius: 20),
+          BoxShadow(color: AppColors.secondary.withOpacity(0.1), blurRadius: 20),
         ],
       ),
       child: Column(
@@ -75,7 +71,7 @@ class WorkOrderDetailScreen extends StatelessWidget {
             children: [
               Text(
                 workOrder.auart,
-                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.sapGold),
+                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.secondary),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -100,48 +96,48 @@ class WorkOrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailSection() {
+  Widget _buildDetailSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Operational Info', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
-        _buildDetailRow('Object Number', workOrder.objnr),
-        _buildDetailRow('Order Type', workOrder.autyp),
-        _buildDetailRow('Planned Start', workOrder.erdat),
-        _buildDetailRow('Created By', workOrder.ernam),
-        _buildDetailRow('Last Modified', workOrder.aedat),
+        _buildDetailRow(context, 'Object Number', workOrder.objnr),
+        _buildDetailRow(context, 'Order Type', workOrder.autyp),
+        _buildDetailRow(context, 'Planned Start', workOrder.erdat),
+        _buildDetailRow(context, 'Created By', workOrder.ernam),
+        _buildDetailRow(context, 'Last Modified', workOrder.aedat),
       ],
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildDetailRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: Colors.grey[600])),
+          Text(label, style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white38 : Colors.grey[600])),
           Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
         ],
       ),
     );
   }
 
-  Widget _buildHistoryTimeline() {
+  Widget _buildHistoryTimeline(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Lifecycle History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
-        _buildTimelineItem('Work Order Released', workOrder.erdat, workOrder.ernam, true),
-        _buildTimelineItem('Resources Scheduled', workOrder.erdat, 'Dispatcher', false),
-        _buildTimelineItem('Status Changed to In-Progress', workOrder.aedat, workOrder.ernam, false),
+        _buildTimelineItem(context, 'Work Order Released', workOrder.erdat, workOrder.ernam, true),
+        _buildTimelineItem(context, 'Resources Scheduled', workOrder.erdat, 'Dispatcher', false),
+        _buildTimelineItem(context, 'Status Changed to In-Progress', workOrder.aedat, workOrder.ernam, false),
       ],
     );
   }
 
-  Widget _buildTimelineItem(String title, String date, String user, bool isLast) {
+  Widget _buildTimelineItem(BuildContext context, String title, String date, String user, bool isLast) {
     return IntrinsicHeight(
       child: Row(
         children: [
@@ -150,11 +146,11 @@ class WorkOrderDetailScreen extends StatelessWidget {
               Container(
                 width: 12,
                 height: 12,
-                decoration: const BoxDecoration(color: AppColors.sapGold, shape: BoxShape.circle),
+                decoration: const BoxDecoration(color: AppColors.secondary, shape: BoxShape.circle),
               ),
               if (!isLast)
                 Expanded(
-                  child: Container(width: 2, color: AppColors.sapGold.withOpacity(0.2)),
+                  child: Container(width: 2, color: AppColors.secondary.withOpacity(0.2)),
                 ),
             ],
           ),
@@ -166,7 +162,7 @@ class WorkOrderDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text('$date by $user', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                  Text('$date by $user', style: TextStyle(fontSize: 12, color: Theme.of(context).brightness == Brightness.dark ? Colors.white38 : Colors.grey[600])),
                 ],
               ),
             ),

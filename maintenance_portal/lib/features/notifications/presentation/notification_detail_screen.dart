@@ -20,11 +20,11 @@ class NotificationDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeaderInfo(),
+                  _buildHeaderInfo(context),
                   const SizedBox(height: 30),
-                  _buildDetailSection(),
+                  _buildDetailSection(context),
                   const SizedBox(height: 30),
-                  _buildHistoryTimeline(),
+                  _buildHistoryTimeline(context),
                 ],
               ),
             ),
@@ -38,7 +38,7 @@ class NotificationDetailScreen extends StatelessWidget {
     return SliverAppBar(
       expandedHeight: 200,
       pinned: true,
-      backgroundColor: AppColors.sapBlue,
+      backgroundColor: AppColors.primary,
       flexibleSpace: FlexibleSpaceBar(
         title: Text('Notif #${notification.qmnum}'),
         background: Container(
@@ -53,14 +53,17 @@ class NotificationDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderInfo() {
+  Widget _buildHeaderInfo(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20),
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.black26 : Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+          ),
         ],
       ),
       child: Column(
@@ -71,7 +74,7 @@ class NotificationDetailScreen extends StatelessWidget {
             children: [
               Text(
                 notification.qmart,
-                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.sapBlue),
+                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -96,48 +99,48 @@ class NotificationDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailSection() {
+  Widget _buildDetailSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Technical Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
-        _buildDetailRow('Equipment', notification.qmnam),
-        _buildDetailRow('Start Date', notification.strmn),
-        _buildDetailRow('Creation Date', notification.erdat),
-        _buildDetailRow('Created By', notification.ernam),
-        _buildDetailRow('Last Modified', notification.aedat),
+        _buildDetailRow(context, 'Equipment', notification.qmnam),
+        _buildDetailRow(context, 'Start Date', notification.strmn),
+        _buildDetailRow(context, 'Creation Date', notification.erdat),
+        _buildDetailRow(context, 'Created By', notification.ernam),
+        _buildDetailRow(context, 'Last Modified', notification.aedat),
       ],
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildDetailRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: Colors.grey[600])),
+          Text(label, style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white38 : Colors.grey[600])),
           Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
         ],
       ),
     );
   }
 
-  Widget _buildHistoryTimeline() {
+  Widget _buildHistoryTimeline(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Lifecycle History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
-        _buildTimelineItem('Notification Created', notification.erdat, notification.ernam, true),
-        _buildTimelineItem('Priority Assigned', notification.erdat, 'System', false),
-        _buildTimelineItem('Last Update Detected', notification.aedat, notification.aenam, false),
+        _buildTimelineItem(context, 'Notification Created', notification.erdat, notification.ernam, true),
+        _buildTimelineItem(context, 'Priority Assigned', notification.erdat, 'System', false),
+        _buildTimelineItem(context, 'Last Update Detected', notification.aedat, notification.aenam, false),
       ],
     );
   }
 
-  Widget _buildTimelineItem(String title, String date, String user, bool isLast) {
+  Widget _buildTimelineItem(BuildContext context, String title, String date, String user, bool isLast) {
     return IntrinsicHeight(
       child: Row(
         children: [
@@ -146,11 +149,11 @@ class NotificationDetailScreen extends StatelessWidget {
               Container(
                 width: 12,
                 height: 12,
-                decoration: const BoxDecoration(color: AppColors.sapBlue, shape: BoxShape.circle),
+                decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
               ),
               if (!isLast)
                 Expanded(
-                  child: Container(width: 2, color: AppColors.sapBlue.withOpacity(0.2)),
+                  child: Container(width: 2, color: AppColors.primary.withOpacity(0.2)),
                 ),
             ],
           ),
@@ -162,7 +165,7 @@ class NotificationDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text('$date by $user', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                  Text('$date by $user', style: TextStyle(fontSize: 12, color: Theme.of(context).brightness == Brightness.dark ? Colors.white38 : Colors.grey[600])),
                 ],
               ),
             ),

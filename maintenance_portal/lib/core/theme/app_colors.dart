@@ -1,46 +1,52 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Brand Colors (SAP/Fiori inspired)
-  static const Color sapBlue = Color(0xFF0056D2);
-  static const Color sapGold = Color(0xFFE4AA18);
-  static const Color sapLightBlue = Color(0xFF0A6ED1);
+  // Brand Colors (Premium Industrial)
+  static const Color primary = Color(0xFF6B4EE6); // Deep Purple
+  static const Color secondary = Color(0xFFFF8C00); // Sunset Orange
+  static const Color accent = Color(0xFFE64EAB); // Vibrant Magenta
   
   // Industrial Gradients
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF0056D2), Color(0xFF0089FF)],
+    colors: [Color(0xFF6B4EE6), Color(0xFF9B4EE6)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient accentGradient = LinearGradient(
+    colors: [Color(0xFFFF8C00), Color(0xFFFF4500)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient darkGradient = LinearGradient(
-    colors: [Color(0xFF1A1C1E), Color(0xFF2C2F33)],
+    colors: [Color(0xFF0D0D12), Color(0xFF1A1A24)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   // Background Colors
-  static const Color lightBg = Color(0xFFF4F7FC);
-  static const Color darkBg = Color(0xFF0F1115);
-  static const Color darkSurface = Color(0xFF1A1C1E);
+  static const Color lightBg = Color(0xFFF8F9FE);
+  static const Color darkBg = Color(0xFF0D0D12);
+  static const Color darkSurface = Color(0xFF14141B);
 
   // Card Colors
   static const Color cardLight = Colors.white;
-  static const Color cardDark = Color(0xFF23262B);
+  static const Color cardDark = Color(0xFF1C1C26);
 
   // Status Colors
-  static const Color success = Color(0xFF2ECC71);
-  static const Color warning = Color(0xFFF1C40F);
-  static const Color error = Color(0xFFE74C3C);
-  static const Color info = Color(0xFF3498DB);
+  static const Color success = Color(0xFF00C853);
+  static const Color warning = Color(0xFFFFAB00);
+  static const Color error = Color(0xFFFF1744);
+  static const Color info = Color(0xFF00B0FF); // Cyan/Light Blue - replacing with Tealish Cyan if needed, or keeping for standard info
 
   // Text Colors
-  static const Color textPrimaryLight = Color(0xFF1D1D1F);
-  static const Color textSecondaryLight = Color(0xFF6E6E73);
-  static const Color textPrimaryDark = Color(0xFFE5E5E7);
-  static const Color textSecondaryDark = Color(0xFFA1A1A6);
+  static const Color textPrimaryLight = Color(0xFF1D1D21);
+  static const Color textSecondaryLight = Color(0xFF6B6B75);
+  static const Color textPrimaryDark = Color(0xFFF2F2F7);
+  static const Color textSecondaryDark = Color(0xFF9898A1);
 
   // Glassmorphism
-  static Color glassWhite = Colors.white.withOpacity(0.15);
-  static Color glassBlack = Colors.black.withOpacity(0.3);
+  static Color glassWhite = Colors.white.withOpacity(0.12);
+  static Color glassBlack = Colors.black.withOpacity(0.25);
 }

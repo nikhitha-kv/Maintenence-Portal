@@ -6,13 +6,13 @@ final themeProvider = StateNotifierProvider<ThemeNotifier, bool>((ref) {
 });
 
 class ThemeNotifier extends StateNotifier<bool> {
-  ThemeNotifier() : super(false) {
+  ThemeNotifier() : super(true) {
     _loadTheme();
   }
 
   void _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
-    state = prefs.getBool('isDarkMode') ?? false;
+    state = prefs.getBool('isDarkMode') ?? true;
   }
 
   void toggleTheme() async {

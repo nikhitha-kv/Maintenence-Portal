@@ -14,16 +14,22 @@ class ProfileScreen extends ConsumerWidget {
     final isDarkMode = ref.watch(themeProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile Settings')),
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        title: Text('Profile Settings', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black87)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: isDarkMode ? Colors.white : Colors.black87),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            _buildProfileCard(user?.empid ?? 'N/A'),
+            _buildProfileCard(user?.empid ?? 'N/A', isDarkMode),
             const SizedBox(height: 30),
             _buildSettingsSection(context, ref, isDarkMode),
             const SizedBox(height: 30),
-            _buildAppInfo(),
+            _buildAppInfo(isDarkMode),
             const SizedBox(height: 40),
             _buildLogoutButton(ref),
           ],
@@ -32,26 +38,23 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileCard(String empid) {
+  Widget _buildProfileCard(String empid, bool isDarkMode) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: AppColors.primaryGradient,
+        color: isDarkMode ? Colors.white.withOpacity(0.15) : Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(32),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.sapBlue.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
+        border: Border.all(color: isDarkMode ? Colors.white.withOpacity(0.2) : Colors.black.withOpacity(0.05)),
+        boxShadow: isDarkMode ? [] : [
+          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, 10)),
         ],
       ),
       child: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 40,
-            backgroundColor: Colors.white24,
-            child: Icon(Icons.person, size: 40, color: Colors.white),
+            backgroundColor: isDarkMode ? Colors.white24 : AppColors.primary.withOpacity(0.1),
+            child: Icon(Icons.person, size: 40, color: isDarkMode ? Colors.white : AppColors.primary),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -61,25 +64,25 @@ class ProfileScreen extends ConsumerWidget {
                 Text(
                   'Maintenance Engineer',
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: isDarkMode ? Colors.white : Colors.black87,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   'Employee ID: $empid',
-                  style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: isDarkMode ? Colors.white.withOpacity(0.2) : AppColors.success.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Active Session',
-                    style: TextStyle(color: Colors.white, fontSize: 10),
+                    style: TextStyle(color: isDarkMode ? Colors.white : AppColors.success, fontSize: 10, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -94,82 +97,121 @@ class ProfileScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Settings',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDarkMode ? Colors.white : Colors.black87),
         ),
         const SizedBox(height: 16),
         _buildSettingsTile(
-          'Dark Mode',
-          'Switch between light and dark theme',
-          Icons.dark_mode_outlined,
+          context,
+          isDarkMode ? 'Light Theme' : 'Dark Theme',
+          'Switch between light and dark aesthetics',
+          isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+          isDarkMode: isDarkMode,
           trailing: Switch(
-            value: isDarkMode,
+            value: !isDarkMode,
             onChanged: (val) => ref.read(themeProvider.notifier).toggleTheme(),
-            activeColor: AppColors.sapGold,
+            activeColor: AppColors.secondary,
           ),
+          onTap: () => ref.read(themeProvider.notifier).toggleTheme(),
         ),
         _buildSettingsTile(
+          context,
           'Notifications',
           'Manage app notifications',
           Icons.notifications_active_outlined,
+          isDarkMode: isDarkMode,
+          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Notification settings coming soon...')),
+          ),
         ),
         _buildSettingsTile(
+          context,
           'Security',
           'Biometric login and PIN',
           Icons.security_outlined,
+          isDarkMode: isDarkMode,
+          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Security settings coming soon...')),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildSettingsTile(String title, String subtitle, IconData icon, {Widget? trailing}) {
+  Widget _buildSettingsTile(
+    BuildContext context,
+    String title,
+    String subtitle,
+    IconData icon, {
+    Widget? trailing,
+    VoidCallback? onTap,
+    required bool isDarkMode,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? Colors.white.withOpacity(0.15) : Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey[100]!),
+        border: Border.all(color: isDarkMode ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05)),
       ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.sapBlue.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: AppColors.sapBlue, size: 20),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: AppColors.primary, size: 20),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black87,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isDarkMode ? Colors.white70 : Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              trailing ?? Icon(Icons.chevron_right, color: isDarkMode ? Colors.white24 : Colors.black26, size: 20),
+            ],
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-              ],
-            ),
-          ),
-          trailing ?? const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildAppInfo() {
+  Widget _buildAppInfo(bool isDarkMode) {
     return Column(
       children: [
         const Divider(),
         const SizedBox(height: 16),
-        const Text(
+        Text(
           'SAP Maintenance Portal',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+          style: TextStyle(fontWeight: FontWeight.bold, color: isDarkMode ? Colors.white60 : Colors.black38),
         ),
-        const Text(
+        Text(
           'Version 1.0.0 (Production)',
-          style: TextStyle(fontSize: 12, color: Colors.grey),
+          style: TextStyle(fontSize: 12, color: isDarkMode ? Colors.white54 : Colors.black26),
         ),
         const SizedBox(height: 8),
         Row(

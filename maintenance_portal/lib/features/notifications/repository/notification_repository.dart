@@ -12,4 +12,8 @@ class NotificationRepository {
     final List results = response.data['d']['results'];
     return results.map((e) => NotificationModel.fromJson(e)).toList();
   }
+
+  Future<void> createNotification(Map<String, dynamic> data) async {
+    await _apiClient.post(AppEndpoints.notifications, data: data);
+  }
 }
