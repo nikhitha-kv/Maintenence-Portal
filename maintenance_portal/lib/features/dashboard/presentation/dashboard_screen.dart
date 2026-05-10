@@ -189,7 +189,7 @@ class DashboardScreen extends ConsumerWidget {
         ),
         _buildAnimatedKPICard(
           'OVERALL OEE',
-          '94.2%',
+          data.oee,
           'Target: 95%',
           Icons.offline_bolt_rounded,
           AppColors.success,
@@ -199,7 +199,7 @@ class DashboardScreen extends ConsumerWidget {
         ),
         _buildAnimatedKPICard(
           'TOTAL UPTIME',
-          '99.8%',
+          data.uptime,
           'Last 30 Days',
           Icons.verified_rounded,
           AppColors.info,

@@ -45,15 +45,6 @@ class _NotificationListScreenState extends ConsumerState<NotificationListScreen>
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreateNotificationSheet(context),
-        backgroundColor: isDarkMode ? AppColors.secondary : const Color(0xFF2575FC),
-        icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: Text(
-          'NEW REQUEST',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-      ),
     );
   }
 
