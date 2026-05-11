@@ -8,7 +8,9 @@ class PremiumSearchBar extends StatefulWidget {
   final String hintText;
   final Function(String) onChanged;
   final VoidCallback onFilterTap;
+  final VoidCallback? onSortTap;
   final bool hasActiveFilters;
+  final bool hasActiveSort;
 
   const PremiumSearchBar({
     super.key,
@@ -16,7 +18,9 @@ class PremiumSearchBar extends StatefulWidget {
     required this.hintText,
     required this.onChanged,
     required this.onFilterTap,
+    this.onSortTap,
     this.hasActiveFilters = false,
+    this.hasActiveSort = false,
   });
 
   @override
@@ -118,6 +122,33 @@ class _PremiumSearchBarState extends State<PremiumSearchBar> with SingleTickerPr
                 _controller.clear();
                 _onChanged('');
               },
+            ),
+          const SizedBox(width: 4),
+          if (widget.onSortTap != null)
+            Stack(
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.sort_rounded,
+                    color: widget.hasActiveSort ? AppColors.primary : Colors.grey[500],
+                    size: 22,
+                  ),
+                  onPressed: widget.onSortTap,
+                ),
+                if (widget.hasActiveSort)
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           const SizedBox(width: 4),
           Stack(

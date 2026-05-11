@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../models/notification_model.dart';
@@ -10,6 +11,7 @@ import 'notification_controller.dart';
 import 'notification_detail_screen.dart';
 import '../../../shared/widgets/premium_search_bar.dart';
 import '../../../shared/widgets/premium_filter_sheet.dart';
+import '../../../core/utils/date_formatter.dart';
 
 class NotificationListScreen extends ConsumerStatefulWidget {
   const NotificationListScreen({super.key});
@@ -208,7 +210,75 @@ class _NotificationListScreenState extends ConsumerState<NotificationListScreen>
                 ),
               ),
               FilterSection(
-                title: 'Sort By',
+                title: 'Date Range',
+                child: GestureDetector(
+                  onTap: () async {
+                    final picked = await showDateRangePicker(
+                      context: context,
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                      initialDateRange: filters.startDate != null && filters.endDate != null
+                          ? DateTimeRange(start: filters.startDate!, end: filters.endDate!)
+                          : null,
+                    );
+                    if (picked != null) {
+                      notifier.setDateRange(picked.start, picked.end);
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.05) : Colors.grey[100],
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.calendar_month_outlined, size: 20, color: AppColors.primary),
+                        const SizedBox(width: 12),
+                        Text(
+                          filters.startDate != null && filters.endDate != null
+                              ? '${DateFormat('dd MMM yyyy').format(filters.startDate!)} - ${DateFormat('dd MMM yyyy').format(filters.endDate!)}'
+                              : 'Select Date Range',
+                          style: GoogleFonts.outfit(
+                            fontWeight: FontWeight.w500,
+                            color: filters.startDate != null ? null : Colors.grey[500],
+                          ),
+                        ),
+                        const Spacer(),
+                        if (filters.startDate != null)
+                          GestureDetector(
+                            onTap: () => notifier.setDateRange(null, null),
+                            child: const Icon(Icons.close_rounded, size: 18, color: AppColors.error),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _showSortSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Consumer(
+        builder: (context, ref, child) {
+          final filters = ref.watch(notificationFilterProvider);
+          final notifier = ref.read(notificationFilterProvider.notifier);
+
+          return PremiumFilterSheet(
+            title: 'Sort Notifications',
+            onReset: () => notifier.setSortBy(SortOption.newest),
+            onApply: () => Navigator.pop(context),
+            children: [
+              FilterSection(
+                title: 'Order',
                 child: Wrap(
                   spacing: 12,
                   runSpacing: 12,
@@ -230,7 +300,6 @@ class _NotificationListScreenState extends ConsumerState<NotificationListScreen>
 
   Widget _buildSliverAppBar(BuildContext context) {
     final filters = ref.watch(notificationFilterProvider);
-    final hasActiveFilters = filters.priorities.isNotEmpty || filters.sortBy != SortOption.newest;
 
     final isDarkMode = ref.watch(themeProvider);
     return SliverAppBar(
@@ -277,7 +346,9 @@ class _NotificationListScreenState extends ConsumerState<NotificationListScreen>
             hintText: 'Search diagnostics...',
             onChanged: (val) => ref.read(notificationSearchProvider.notifier).state = val,
             onFilterTap: () => _showFilterSheet(context),
-            hasActiveFilters: hasActiveFilters,
+            onSortTap: () => _showSortSheet(context),
+            hasActiveFilters: filters.priorities.isNotEmpty || filters.startDate != null,
+            hasActiveSort: filters.sortBy != SortOption.newest,
           ),
         ),
       ),
@@ -372,7 +443,7 @@ class _NotificationListScreenState extends ConsumerState<NotificationListScreen>
                     Icon(Icons.calendar_today_outlined, size: 14, color: isDarkMode ? Colors.white70 : Colors.black45),
                     const SizedBox(width: 4),
                     Text(
-                      item.erdat,
+                      DateFormatter.formatSAPDate(item.erdat),
                       style: TextStyle(fontSize: 12, color: isDarkMode ? Colors.white70 : Colors.black45),
                     ),
                   ],

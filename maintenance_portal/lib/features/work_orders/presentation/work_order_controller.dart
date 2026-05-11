@@ -4,6 +4,7 @@ import '../repository/work_order_repository.dart';
 import '../models/work_order_filter.dart';
 import '../../notifications/models/notification_filter.dart'; // for SortOption
 import '../../auth/presentation/auth_controller.dart';
+import '../../../core/utils/date_formatter.dart';
 
 final workOrderRepositoryProvider = Provider((ref) {
   final apiClient = ref.watch(apiClientProvider);
@@ -28,6 +29,7 @@ class WorkOrderFilterNotifier extends StateNotifier<WorkOrderFilter> {
   void setSortBy(SortOption sortBy) => state = state.copyWith(sortBy: sortBy);
   void setObjectType(String? type) => state = state.copyWith(objectType: type);
   void setCreatedBy(String? user) => state = state.copyWith(createdBy: user);
+  void setDateRange(DateTime? start, DateTime? end) => state = state.copyWith(startDate: start, endDate: end);
   void reset() => state = WorkOrderFilter();
 }
 
@@ -61,6 +63,19 @@ final filteredWorkOrdersProvider = Provider<List<WorkOrderModel>>((ref) {
       // Created By filtering
       if (filters.createdBy != null) {
         filtered = filtered.where((o) => o.ernam == filters.createdBy).toList();
+      }
+
+      // Date Range filtering
+      if (filters.startDate != null && filters.endDate != null) {
+        final start = DateTime(filters.startDate!.year, filters.startDate!.month, filters.startDate!.day);
+        final end = DateTime(filters.endDate!.year, filters.endDate!.month, filters.endDate!.day, 23, 59, 59);
+        
+        filtered = filtered.where((o) {
+          final oDate = DateFormatter.toDateTime(o.erdat);
+          if (oDate == null) return false;
+          return (oDate.isAfter(start) || oDate.isAtSameMomentAs(start)) &&
+                 (oDate.isBefore(end) || oDate.isAtSameMomentAs(end));
+        }).toList();
       }
 
       // Sorting

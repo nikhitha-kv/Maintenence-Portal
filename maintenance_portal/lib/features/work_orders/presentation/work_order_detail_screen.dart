@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/work_order_model.dart';
+import '../../../core/utils/date_formatter.dart';
 
 class WorkOrderDetailScreen extends StatelessWidget {
   final WorkOrderModel workOrder;
@@ -104,9 +105,9 @@ class WorkOrderDetailScreen extends StatelessWidget {
         const SizedBox(height: 16),
         _buildDetailRow(context, 'Object Number', workOrder.objnr),
         _buildDetailRow(context, 'Order Type', workOrder.autyp),
-        _buildDetailRow(context, 'Planned Start', workOrder.erdat),
+        _buildDetailRow(context, 'Planned Start', DateFormatter.formatSAPDate(workOrder.erdat)),
         _buildDetailRow(context, 'Created By', workOrder.ernam),
-        _buildDetailRow(context, 'Last Modified', workOrder.aedat),
+        _buildDetailRow(context, 'Last Modified', DateFormatter.formatSAPDate(workOrder.aedat)),
       ],
     );
   }
@@ -130,9 +131,9 @@ class WorkOrderDetailScreen extends StatelessWidget {
       children: [
         const Text('Lifecycle History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
-        _buildTimelineItem(context, 'Work Order Released', workOrder.erdat, workOrder.ernam, true),
-        _buildTimelineItem(context, 'Resources Scheduled', workOrder.erdat, 'Dispatcher', false),
-        _buildTimelineItem(context, 'Status Changed to In-Progress', workOrder.aedat, workOrder.ernam, false),
+        _buildTimelineItem(context, 'Work Order Released', DateFormatter.formatSAPDate(workOrder.erdat), workOrder.ernam, true),
+        _buildTimelineItem(context, 'Resources Scheduled', DateFormatter.formatSAPDate(workOrder.erdat), 'Dispatcher', false),
+        _buildTimelineItem(context, 'Status Changed to In-Progress', DateFormatter.formatSAPDate(workOrder.aedat), workOrder.ernam, false),
       ],
     );
   }

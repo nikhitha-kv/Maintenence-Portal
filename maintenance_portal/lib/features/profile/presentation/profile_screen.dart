@@ -30,8 +30,6 @@ class ProfileScreen extends ConsumerWidget {
             _buildSettingsSection(context, ref, isDarkMode),
             const SizedBox(height: 30),
             _buildAppInfo(isDarkMode),
-            const SizedBox(height: 40),
-            _buildLogoutButton(ref),
           ],
         ),
       ),
@@ -115,26 +113,8 @@ class ProfileScreen extends ConsumerWidget {
           ),
           onTap: () => ref.read(themeProvider.notifier).toggleTheme(),
         ),
-        _buildSettingsTile(
-          context,
-          'Notifications',
-          'Manage app notifications',
-          Icons.notifications_active_outlined,
-          isDarkMode: isDarkMode,
-          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Notification settings coming soon...')),
-          ),
-        ),
-        _buildSettingsTile(
-          context,
-          'Security',
-          'Biometric login and PIN',
-          Icons.security_outlined,
-          isDarkMode: isDarkMode,
-          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Security settings coming soon...')),
-          ),
-        ),
+        const SizedBox(height: 12),
+        _buildLogoutButton(ref),
       ],
     );
   }

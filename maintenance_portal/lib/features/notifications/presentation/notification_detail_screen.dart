@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/notification_model.dart';
+import '../../../core/utils/date_formatter.dart';
 
 class NotificationDetailScreen extends StatelessWidget {
   final NotificationModel notification;
@@ -107,9 +108,9 @@ class NotificationDetailScreen extends StatelessWidget {
         const SizedBox(height: 16),
         _buildDetailRow(context, 'Equipment', notification.qmnam),
         _buildDetailRow(context, 'Start Date', notification.strmn),
-        _buildDetailRow(context, 'Creation Date', notification.erdat),
+        _buildDetailRow(context, 'Creation Date', DateFormatter.formatSAPDate(notification.erdat)),
         _buildDetailRow(context, 'Created By', notification.ernam),
-        _buildDetailRow(context, 'Last Modified', notification.aedat),
+        _buildDetailRow(context, 'Last Modified', DateFormatter.formatSAPDate(notification.aedat)),
       ],
     );
   }
@@ -133,9 +134,9 @@ class NotificationDetailScreen extends StatelessWidget {
       children: [
         const Text('Lifecycle History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
-        _buildTimelineItem(context, 'Notification Created', notification.erdat, notification.ernam, true),
-        _buildTimelineItem(context, 'Priority Assigned', notification.erdat, 'System', false),
-        _buildTimelineItem(context, 'Last Update Detected', notification.aedat, notification.aenam, false),
+        _buildTimelineItem(context, 'Notification Created', DateFormatter.formatSAPDate(notification.erdat), notification.ernam, true),
+        _buildTimelineItem(context, 'Priority Assigned', DateFormatter.formatSAPDate(notification.erdat), 'System', false),
+        _buildTimelineItem(context, 'Last Update Detected', DateFormatter.formatSAPDate(notification.aedat), notification.aenam, false),
       ],
     );
   }

@@ -1,0 +1,27 @@
+ZMP_902095
+L25K907263
+
+ZMPLOGIN902095
+
+
+https://AZKTLDS5CP.kcloud.com:44300/sap/opu/odata/SAP/ZMP_902095_ODATA_SRV/LoginSet?$filter=Empid eq '2001' and Passwd eq '0000'
+
+https://AZKTLDS5CP.kcloud.com:44300/sap/opu/odata/SAP/ZMP_902095_ODATA_SRV/NotifSet
+
+https://AZKTLDS5CP.kcloud.com:44300/sap/opu/odata/SAP/ZMP_902095_ODATA_SRV/WorkOrdSet
+
+https://AZKTLDS5CP.kcloud.com:44300/sap/opu/odata/SAP/ZMP_902095_ODATA_SRV/DashSet
+
+
+
+https://azktlds5cp.kcloud.com:44300/sap/opu/odata/SAP/ZMP_902095_ODATA_SRV/
+
+flutter run -d chrome --web-browser-flag "--disable-web-security"
+
+adb reverse tcp:44300 tcp:44300
+
+adb pair ...
+adb connect ...
+
+
+

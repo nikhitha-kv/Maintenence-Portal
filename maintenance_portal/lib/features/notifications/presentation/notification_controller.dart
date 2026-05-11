@@ -3,6 +3,7 @@ import '../models/notification_model.dart';
 import '../repository/notification_repository.dart';
 import '../models/notification_filter.dart';
 import '../../auth/presentation/auth_controller.dart';
+import '../../../core/utils/date_formatter.dart';
 
 final notificationRepositoryProvider = Provider((ref) {
   final apiClient = ref.watch(apiClientProvider);
@@ -27,6 +28,7 @@ class NotificationFilterNotifier extends StateNotifier<NotificationFilter> {
   void setSortBy(SortOption sortBy) => state = state.copyWith(sortBy: sortBy);
   void setType(String? type) => state = state.copyWith(notificationType: type);
   void setCreatedBy(String? user) => state = state.copyWith(createdBy: user);
+  void setDateRange(DateTime? start, DateTime? end) => state = state.copyWith(startDate: start, endDate: end);
   void reset() => state = NotificationFilter();
 }
 
@@ -89,6 +91,19 @@ final filteredNotificationsProvider = Provider<List<NotificationModel>>((ref) {
       // Created By filtering
       if (filters.createdBy != null) {
         filtered = filtered.where((n) => n.ernam == filters.createdBy).toList();
+      }
+      
+      // Date Range filtering
+      if (filters.startDate != null && filters.endDate != null) {
+        final start = DateTime(filters.startDate!.year, filters.startDate!.month, filters.startDate!.day);
+        final end = DateTime(filters.endDate!.year, filters.endDate!.month, filters.endDate!.day, 23, 59, 59);
+        
+        filtered = filtered.where((n) {
+          final nDate = DateFormatter.toDateTime(n.erdat);
+          if (nDate == null) return false;
+          return (nDate.isAfter(start) || nDate.isAtSameMomentAs(start)) &&
+                 (nDate.isBefore(end) || nDate.isAtSameMomentAs(end));
+        }).toList();
       }
 
       // Sorting
