@@ -37,18 +37,16 @@ class WorkOrderDetailScreen extends StatelessWidget {
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
-      expandedHeight: 200,
       pinned: true,
+      elevation: 0,
       backgroundColor: AppColors.secondary,
-      flexibleSpace: FlexibleSpaceBar(
-        title: Text('WO #${workOrder.aufnr}'),
-        background: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.accentGradient,
-          ),
-          child: const Center(
-            child: Icon(Icons.engineering_outlined, size: 80, color: Colors.white24),
-          ),
+      centerTitle: false,
+      title: Text(
+        'WO #${workOrder.aufnr}',
+        style: GoogleFonts.outfit(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: Colors.white,
         ),
       ),
     );
