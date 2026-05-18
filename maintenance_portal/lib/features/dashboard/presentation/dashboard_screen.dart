@@ -59,12 +59,6 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ),
       ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.help_outline_rounded, color: isDarkMode ? Colors.white : Colors.black54),
-          onPressed: () {},
-        ),
-      ],
     );
   }
 

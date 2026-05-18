@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../auth/presentation/auth_controller.dart';
+import '../../../shared/widgets/main_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -214,7 +215,10 @@ class ProfileScreen extends ConsumerWidget {
       width: double.infinity,
       height: 56,
       child: OutlinedButton.icon(
-        onPressed: () => ref.read(authProvider.notifier).logout(),
+        onPressed: () {
+          ref.read(navigationIndexProvider.notifier).state = 0;
+          ref.read(authProvider.notifier).logout();
+        },
         icon: const Icon(Icons.logout, color: AppColors.error),
         label: const Text(
           'LOGOUT SESSION',
