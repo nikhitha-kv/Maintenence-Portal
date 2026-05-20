@@ -68,7 +68,8 @@ class DashboardScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildWelcomeHeader(context, isDarkMode),
+                // Pass the data model to the header for dynamic status
+      _buildWelcomeHeader(context, isDarkMode, data),
           const SizedBox(height: 24),
           _buildKPIGrid(context, data, isDarkMode),
           const SizedBox(height: 32),
@@ -98,7 +99,20 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildWelcomeHeader(BuildContext context, bool isDarkMode) {
+  Widget _buildWelcomeHeader(BuildContext context, bool isDarkMode, DashModel data) {
+    // Determine plant status based on total notifications
+    String statusText;
+    Color statusColor;
+    if (data.totalNotifications < 50) {
+      statusText = 'Optimal';
+      statusColor = AppColors.success;
+    } else if (data.totalNotifications < 150) {
+      statusText = 'Warning';
+      statusColor = AppColors.warning;
+    } else {
+      statusText = 'Critical';
+      statusColor = AppColors.error;
+    }
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -129,10 +143,10 @@ class DashboardScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Plant Status: Optimal',
+                  'Plant Status: $statusText',
                   style: GoogleFonts.outfit(
                     fontSize: 14,
-                    color: AppColors.success,
+                    color: statusColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

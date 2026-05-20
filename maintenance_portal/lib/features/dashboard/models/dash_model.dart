@@ -17,13 +17,15 @@ class DashModel {
 
   factory DashModel.fromJson(Map<String, dynamic> json) {
     return DashModel(
-      totalNotifications: int.tryParse(json['TotalNotif']?.toString() ?? '0') ?? 0,
-      totalWorkOrders: int.tryParse(json['TotalWorkOrd']?.toString() ?? '0') ?? 0,
-      todayNotifications: int.tryParse(json['TodayNotif']?.toString() ?? '0') ?? 0,
-      todayWorkOrders: int.tryParse(json['TodayWorkOrd']?.toString() ?? '0') ?? 0,
+      totalNotifications: int.tryParse(json['TotNotif']?.toString() ?? '0') ?? 0,
+      totalWorkOrders: int.tryParse(json['TotWorkord']?.toString() ?? '0') ?? 0,
+      todayNotifications: int.tryParse(json['TodNotif']?.toString() ?? '0') ?? 0,
+      todayWorkOrders: int.tryParse(json['TodWorkord']?.toString() ?? '0') ?? 0,
       // Map these if they exist in the SAP response, otherwise default to demo values
       oee: json['Oee']?.toString() ?? '94.2%',
       uptime: json['Uptime']?.toString() ?? '99.8%',
     );
   }
-}
+
+  }
+
